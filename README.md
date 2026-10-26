@@ -1,3 +1,5 @@
+# Team-Datasol
+REPOSITORY FOR MAINTAINING OUR GROUP'S CODE FOR CSE558 COURSE 
 # Debunking T20 Myths: Statistical Inference on Chasing Under Dew, Boundary Proportions, and Venue Profiles in the IPL
 
 **Course**: CSE558 Data Science — Monsoon 2026, IIIT-Delhi  
@@ -24,19 +26,18 @@ This project investigates four core tactical and environmental hypotheses in T20
 ```
 ipl_data_science_project/
 ├── data/
-│   ├── ipl_match_ball_by_ball_data.csv       # Original dataset 1 (225,954 rows × 22 columns)
-│   ├── deliveries.csv                        # Original dataset 2 (Cricsheet deliveries)
-│   └── ipl_cleaned_encoded.csv               # Final processed dataset (225,775 rows × 47 columns)
+│   └── ipl_match_ball_by_ball_data.csv       # 225,954 deliveries × 22 raw columns
 ├── plots/ & report/
 │   ├── fig_p1_dew.pdf                        # EDA Plot 1: Innings 1 vs 2 scoring at dew grounds
 │   ├── fig_p2_boundaries.pdf                 # EDA Plot 2: Boundary, Dot & Rotation by phase
 │   ├── fig_p3_wickets.pdf                    # EDA Plot 3: Dismissal mechanism across phases
 │   └── fig_p4_venues.pdf                     # EDA Plot 4: Outcome percentage across stadiums
 ├── src/
-│   └── run_ipl_analysis.py                   # Clean Python analysis pipeline (zero comments)
+│   └── run_ipl_analysis.py                   # Complete Python analysis pipeline
 ├── report/
 │   ├── CSE558_Project_Report_Template.tex     # Populated course LaTeX report
-│   └── latex_table_snippets.txt              # Exact numerical statistics for tests
+│   ├── CSE558_Project_Report_Template_ORIGINAL.tex # Original course template backup
+│   └── latex_table_snippets.txt              # Exact LaTeX tables generated from the data
 └── README.md                                 # Reproducibility instructions
 ```
 
