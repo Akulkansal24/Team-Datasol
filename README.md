@@ -24,21 +24,29 @@ This project investigates four core tactical and environmental hypotheses in T20
 ## 📂 Repository Structure
 
 ```
-ipl_data_science_project/
+## Repository Structure
+
+```text
+ipl_complete_project/
 ├── data/
-│   └── ipl_match_ball_by_ball_data.csv       # 225,954 deliveries × 22 raw columns
-├── plots/ & report/
-│   ├── fig_p1_dew.pdf                        # EDA Plot 1: Innings 1 vs 2 scoring at dew grounds
-│   ├── fig_p2_boundaries.pdf                 # EDA Plot 2: Boundary, Dot & Rotation by phase
-│   ├── fig_p3_wickets.pdf                    # EDA Plot 3: Dismissal mechanism across phases
-│   └── fig_p4_venues.pdf                     # EDA Plot 4: Outcome percentage across stadiums
-├── src/
-│   └── run_ipl_analysis.py                   # Complete Python analysis pipeline
+│   ├── ipl_match_ball_by_ball_data.csv   # Original IPL dataset: 225,954 rows × 22 columns
+│   ├── deliveries.csv                    # Original Cricsheet deliveries dataset
+│   └── ipl_cleaned_encoded.csv           # Final processed dataset: 225,775 rows × 47 columns
+├── plots/
+│   ├── fig_p1_dew.pdf                    # P1 EDA: Innings 1 vs. 2 scoring at dew-prone grounds
+│   ├── fig_p2_boundaries.pdf              # P2 EDA: Boundaries, dots, and rotation by match phase
+│   ├── fig_p3_wickets.pdf                 # P3 EDA: Dismissal mechanisms across match phases
+│   └── fig_p4_venues.pdf                  # P4 EDA: Delivery outcomes across four iconic stadiums
 ├── report/
-│   ├── CSE558_Project_Report_Template.tex     # Populated course LaTeX report
-│   ├── CSE558_Project_Report_Template_ORIGINAL.tex # Original course template backup
-│   └── latex_table_snippets.txt              # Exact LaTeX tables generated from the data
-└── README.md                                 # Reproducibility instructions
+│   ├── CSE558_Project_Report_Template.tex # Final report
+│   ├── fig_p1_dew.pdf                    # P1 figure included in the report
+│   ├── fig_p2_boundaries.pdf              # P2 figure included in the report
+│   ├── fig_p3_wickets.pdf                 # P3 figure included in the report
+│   ├── fig_p4_venues.pdf                  # P4 figure included in the report
+│   └── latex_table_snippets.txt           # Exact numerical results formatted for LaTeX tables
+├── src/
+│   └── run_ipl_analysis.py                # Complete Python analysis pipeline without comments
+└── README.md                              # Project overview, directory guide, and execution instructions
 ```
 
 ---
