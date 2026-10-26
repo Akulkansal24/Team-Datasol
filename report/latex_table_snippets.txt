@@ -1,0 +1,4 @@
+Test 1: Estimate=-0.02, CI=[-0.046, 0.006], t=-5.23, df=61689, p=1.000
+Test 2: Estimate=+0.72%, CI=[0.28%, 1.17%], Z=-5.64, p=1.000
+Test 3: Chi2=161.16, df=6, p=3.37e-32, Death Run Outs Obs=527 vs Exp=378.2
+Test 4: Chi2=88.08, df=9, p=3.96e-15, Chinnaswamy Boundary Diff=+183.8

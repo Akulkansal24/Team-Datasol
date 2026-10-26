@@ -1,0 +1,456 @@
+%=======================================================================
+%  CSE558 Data Science - Midterm Project Report
+%  Monsoon 2026, IIIT-Delhi
+%=======================================================================
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+%========================= PROJECT TITLE =========================
+\newcommand{\projecttitle}{Debunking T20 Myths: Statistical Inference on Chasing Under Dew, Boundary Proportions, and Venue Profiles in the IPL}
+\newif\ifshowhints
+\showhintsfalse      % \showhintsfalse cleanly hides every grey instruction line
+%=================================================================
+
+%-------------------------------------------- fonts (no need to edit)
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \IfFileExists{carlito.sty}%
+    {\usepackage[sfdefault]{carlito}}%              Calibri look
+    {\usepackage[scaled=0.92]{helvet}\renewcommand{\familydefault}{\sfdefault}}%
+  \usepackage{courier}
+\else
+  \usepackage[no-math]{fontspec}
+  \setmainfont{Carlito}[Extension=.ttf, UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+\fi
+
+%----------------------------------------------------------- packages
+\usepackage[margin=18mm,bottom=20mm,columnsep=7mm]{geometry}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{needspace}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={\projecttitle},
+            pdfsubject={CSE558 Data Science, Monsoon 2026: Midterm Project Report}}
+
+%------------------------------------------------------------- layout
+\definecolor{eg}{HTML}{000000}         % rendered as standard black text for final report
+\definecolor{hintgrey}{gray}{0.58}     % instructions (light grey)
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt}{3pt}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{2pt}
+\newcommand{\sectionbreak}{\needspace{10\baselineskip}}
+\newcommand{\subsectionbreak}{\needspace{10\baselineskip}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist{leftmargin=1.2em, itemsep=2pt, topsep=2pt, parsep=0pt}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{4pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{K}[1]{>{\raggedright\arraybackslash\bfseries\boldmath}p{#1}}  % bold labels
+
+%--------------------------------------------------------- shorthands
+\newcommand{\hint}[1]{\ifshowhints{\footnotesize\itshape\color{hintgrey}#1\par}\fi}
+\newcommand{\eg}[1]{\textcolor{eg}{#1}}
+\newcommand{\egblock}[1]{{\color{eg}#1\par}}
+\newcommand{\field}[2]{\textbf{#1}~#2\par}
+\newcommand{\tpart}[2]{\par\needspace{12\baselineskip}\smallskip\textbf{#1)~#2}\par}
+\newcommand{\minihead}[1]{\par\needspace{8\baselineskip}\smallskip\textbf{#1}\par}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\figfile}[2]{%
+  \IfFileExists{#1}%
+    {\includegraphics[width=\linewidth,height=#2,keepaspectratio]{#1}}%
+    {\fbox{\parbox[c][#2][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}%
+      {\centering\small\itshape\color{hintgrey}Your plot: \detokenize{#1}}}}}
+
+%=======================================================================
+\begin{document}
+
+\twocolumn[%
+{\small\bfseries CSE558 Data Science\ \ \textbullet\ \ Midterm Project Report\ \ \textbullet\ \ Monsoon 2026\par}
+\vspace{4pt}
+{\LARGE\bfseries\raggedright\projecttitle\par}
+\vspace{6pt}
+\rule{\linewidth}{1pt}
+
+{\small
+\begin{tabularx}{\linewidth}{@{}K{2.4cm} Y@{}}
+\toprule
+Group name & Team Wicket \\
+Dataset & \href{https://www.kaggle.com/datasets/patrickb1912/ipl-complete-dataset-20082020}{kaggle.com/datasets/patrickb1912/ipl-complete-dataset-20082020 (Cricsheet 2008--2024)} \\
+Code & \href{https://github.com/cse558-ipl/midterm-project}{github.com/cse558-ipl/midterm-project (notebook, pipeline and README)} \\
+\bottomrule
+\end{tabularx}}
+
+\vspace{2pt}
+{\small
+\begin{tabularx}{\linewidth}{@{}L{0.5cm} L{3.4cm} L{2.3cm} L{4.8cm} Y@{}}
+\toprule
+\textbf{\#} & \textbf{Name} & \textbf{Roll no.} & \textbf{Institute email} & \textbf{Contribution} \\
+\midrule
+1 & Student One & 2022001 & student1@iiitd.ac.in & Dataset cleaning, size validation, pipeline architecture (1, 2) \\
+2 & Student Two & 2022002 & student2@iiitd.ac.in & Data preparation audit, before-and-after observations (2, 3) \\
+3 & Student Three & 2022003 & student3@iiitd.ac.in & Exploratory data analysis, 4 EDA plots generation (4) \\
+4 & Student Four & 2022004 & student4@iiitd.ac.in & Primary hypothesis test P1 (Dew chase) and Test P2 (5) \\
+5 & Student Five & 2022005 & student5@iiitd.ac.in & Categorical tests P3 \& P4, limitations, report compilation (5, 6) \\
+\bottomrule
+\end{tabularx}}
+\vspace{12pt}
+]
+
+%-----------------------------------------------------------------------
+\section{Dataset}
+\hint{Where you have collected the dataset, how many rows and columns there are, and whether
+\#instances $\times$ \#attributes is at least 3M after encoding (show the arithmetic). Name some
+features with their interpretation to the real world.}
+
+\field{Source:}{Kaggle / Cricsheet, ``IPL Complete Dataset (2008--2024)'': ball-by-ball match logs across 17 tournament seasons, downloaded on 24 October 2026. One row records one delivery bowled in an IPL match.}
+
+\field{What is raw about it:}{extras categories (\code{wides}, \code{noballs}, \code{byes}, \code{legbyes}, \code{penalty}) contain $1{,}117{,}710$ cumulative blank entries where \code{NaN} simply means zero extra runs occurred; \code{season} stores mixed formats (\code{"2007/08"} text vs. integer \code{2012}); \code{venue} records 49 inconsistently spelled variants (\code{"M Chinnaswamy Stadium"} vs. \code{"M.Chinnaswamy Stadium"}); \code{innings} contains 161 tiebreaker deliveries from Super Overs; and secondary dismissal columns are over $99.9\%$ blank.}
+
+{\small
+\begin{tabularx}{\linewidth}{@{}L{3.0cm} Y Y@{}}
+\toprule
+ & \textbf{Raw file} & \textbf{After encoding} \\
+\midrule
+Instances (rows) & 225{,}954 & 225{,}775 \\
+Attributes (columns) & 22 & 47 \\
+Instances $\times$ attributes & 4{,}970{,}988 & 10{,}611{,}425 \\
+\bottomrule
+\end{tabularx}}
+
+\field{Size check:}{$225{,}775 \times 47 = 10{,}611{,}425 \ge 3{,}000{,}000$, so the requirement is comfortably met. One-hot encoding of match phases (\code{phase}), iconic grounds (\code{standard\_venue}), and dismissal types (\code{wicket\_type}) is what expands the matrix to 10.6M cells.}
+
+\minihead{Key features}
+\hint{Some key features, with their type (nominal, discrete or continuous) and real-world
+meaning. Include the response variable, if there is one.}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.2cm} L{1.5cm} Y@{}}
+\toprule
+\textbf{Feature} & \textbf{Type} & \textbf{Real-world meaning} \\
+\midrule
+\code{total\_runs} & discrete & runs conceded on the delivery (0 to 7); response modeled via mean rate \\
+\code{ball} & discrete & over and ball index (e.g., 19.6 represents over 20, ball 6) \\
+\code{phase} & nominal & tactical phase: Powerplay (1--6), Middle (7--15), Death (16--20) \\
+\code{innings} & discrete & 1st innings (setting target) vs. 2nd innings (chasing under dew) \\
+\code{venue} & nominal & stadium hosting the match; 49 raw levels collapsed to top 10 + Other \\
+\code{wicket\_type} & nominal & mode of dismissal (caught, bowled, lbw, run out, none) \\
+\code{is\_boundary} & discrete & binary flag: 1 if a four or six was hit off the bat, else 0 \\
+\bottomrule
+\end{tabularx}}
+
+%-----------------------------------------------------------------------
+\section{Data preparation}
+\hint{How did you prepare your data (encoding, outliers, missing values, duplicates), and why do
+you follow such steps? One row per step; the ``why'' matters most.}
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.0cm} L{2.2cm} Y@{}}
+\toprule
+\textbf{Issue found} & \textbf{What we did} & \textbf{Why, and not the alternative} \\
+\midrule
+1{,}117{,}710 blank extras entries & Filled \code{NaN} with 0 across all extras & In cricket scoring, a blank extra means zero extra runs on a legal delivery. Dropping rows would throw away 97\% of valid balls; filling with the average would invent fake runs. \\
+161 Super Over deliveries (innings 3 \& 4) & Excluded from regulation analysis & Super overs have special rules (only 2 wickets, 6 balls) where teams hit with zero fear of getting out, which artificially distorts normal 20-over scoring patterns. \\
+18 duplicate delivery rows & Dropped on (match, innings, ball) & Duplicate entries count the same ball twice and mess up the match timeline. \\
+Secondary dismissals ($>99.9\%$ blank) & Dropped both secondary wicket columns & These record rare secondary outs. Dropping nearly empty columns keeps our data clean without losing useful information. \\
+49 fragmented venue spellings & Standardized names; merged 39 into \code{Other} & Slightly different names (\code{M Chinnaswamy} vs. \code{M.Chinnaswamy}) split the same ground into pieces; merging rare grounds avoids tiny sample sizes while keeping major stadiums intact. \\
+Runs split across bat and extras & Added together into unified response \code{total\_runs} & Combines bat runs and penalty extras into one complete score per delivery, whose average is tested across cohorts. \\
+\bottomrule
+\end{tabularx}}
+
+%-----------------------------------------------------------------------
+\section{What changed after preparation}
+\hint{What are the changes you got after data preparation? Give before-and-after observations.}
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.9cm} L{1.8cm} Y@{}}
+\toprule
+\textbf{Measure} & \textbf{Before} & \textbf{After} \\
+\midrule
+Rows & 225{,}954 & 225{,}775 \\
+Attributes & 22 & 47 \\
+Missing extras (\code{wides}, \code{noballs}) & 1{,}117{,}710 cumulative & 0 (coded as 0 extra runs) \\
+Super Over deliveries & 161 & 0 (excluded from regulation tests) \\
+Duplicate delivery rows & 18 & 0 \\
+Venue levels & 49 (inconsistent) & 11 (10 iconic grounds + \code{Other}) \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{Creating \code{total\_runs} gave us a clean numeric score per ball. One-hot encoding the categorical variables (match phases, venues, and dismissal kinds) expanded our columns from 22 to 47, scaling the dataset to 10.6M cells to comfortably meet the course requirement. We lost only 179 non-standard rows: 161 tiebreaker balls from Super Overs and 18 duplicate entries.}
+
+%-----------------------------------------------------------------------
+\section{Basic questions and problem statements}
+\hint{What are your basic questions about your data, and how is your problem statement novel
+from them? Show a few EDA plots, each with a one-line takeaway.}
+
+\minihead{Basic questions}
+\begin{enumerate}[label=\arabic*.]
+  \item Do teams score more runs when batting in the second innings?
+  \item Are boundaries hit more often in the Death overs than in the Powerplay?
+  \item Which dismissal mode is the most common in T20 cricket?
+  \item Does the home ground affect the frequency of boundary hits?
+\end{enumerate}
+
+\minihead{Our problem statements}
+\hint{One or two sentences each, specific to your features, and phrased so each could come out
+either way. Mark one as primary.}
+
+\noindent\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+\textbf{P1 (primary).} At dew-prone evening grounds, do teams batting second score at an average rate that exceeds teams batting first by more than 0.05 runs/ball?
+
+\smallskip
+\textbf{P2.} Does the proportion of boundary deliveries (fours and sixes) in the Death overs exceed the Powerplay by more than 2 percentage points?
+
+\smallskip
+\textbf{P3.} Is the mode of batsman dismissal (caught, bowled, lbw, run out) independent of the tactical match phase (Powerplay, Middle, Death)?
+
+\smallskip
+\textbf{P4.} Is the distribution of delivery outcomes (Boundary, Dot, Strike Rotation, Wicket) independent of the iconic Indian stadium (Chinnaswamy, Chepauk, Wankhede, Eden Gardens)?
+\end{minipage}}
+
+\field{How they are novel:}{basic questions look at overall averages without isolating context. Ours control for night-time atmospheric dew conditions across innings, compare boundary proportions across distinct field restriction phases, and cross-tabulate tactical dismissal mechanisms and venue profiles.}
+
+\minihead{Exploratory data analysis plots}
+
+\begin{figure}[!ht]
+  \figfile{fig_p1_dew.pdf}{3.2cm}
+  \caption{\textbf{P1 EDA:} Innings 2 chasing scoring rates (1.336 runs/ball) closely mirror Innings 1 (1.356 runs/ball) across dew-prone stadiums, showing no visible second-innings scoring boost.}
+\end{figure}
+
+\begin{figure}[!ht]
+  \figfile{fig_p2_boundaries.pdf}{3.2cm}
+  \caption{\textbf{P2 EDA:} Boundary percentage barely shifts between Death (19.0\%) and Powerplay (18.3\%), but dot balls drop from 45.8\% to 27.2\% as batsmen aggressively rotate strike.}
+\end{figure}
+
+\begin{figure}[!ht]
+  \figfile{fig_p3_wickets.pdf}{3.2cm}
+  \caption{\textbf{P3 EDA:} Caught dismissals dominate all phases, but run outs surge to 527 in the Death overs due to desperate running, while LBWs and bowled dismissals peak in the Powerplay.}
+\end{figure}
+
+\begin{figure}[!ht]
+  \figfile{fig_p4_venues.pdf}{3.2cm}
+  \caption{\textbf{P4 EDA:} Chinnaswamy exhibits the highest boundary share (17.8\%), while Chepauk displays an attrition profile with the lowest boundary share (14.7\%) and highest dot ball share (30.3\%).}
+\end{figure}
+
+%-----------------------------------------------------------------------
+\section{Statistical inferences}
+\hint{Conduct 3--5 hypothesis tests on your problem statement(s), each with parts a)--c) below.
+Know your tests and the reason for using them, and compare them with other tests.}
+
+\field{Rows tested:}{the 225{,}775 regulation deliveries. For Test 1 (P1, dew chase), 61{,}992 deliveries across dew-prone venues (Wankhede, Eden Gardens, Chinnaswamy): 32{,}179 in Innings 1 and 29{,}813 in Innings 2. For Test 2 (P2, boundary rate), 51{,}311 death balls vs. 70{,}921 powerplay balls. For Test 3 (P3, dismissal mode), the 10{,}423 dismissals across the four major modes. For Test 4 (P4, stadium profiles), the 78{,}329 deliveries bowled across the top four iconic stadiums.}
+
+%------------------------------------------------------------ Test 1
+\subsection*{Test 1 (P1): does chasing under dew elevate scoring rates at dew-prone grounds?}
+
+\tpart{a}{Hypotheses, written before running the test}
+\hint{Before running the test, write the null and alternative hypotheses ($H_0$ carries the
+equality), the significance level, one- or two-sided, the test you will use, and the smallest
+difference that would matter in the real world.}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & $\mu_{\text{inn2}} - \mu_{\text{inn1}} \le 0.05$ runs/ball \\
+$H_1$ & $\mu_{\text{inn2}} - \mu_{\text{inn1}} > 0.05$ runs/ball \\
+Significance level & $\alpha=0.05$ \\
+Side & one-sided (right) \\
+Test & Welch's two-sample t-test \\
+Smallest difference that matters & 0.05 runs/ball \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{$\mu_{\text{inn2}}$ and $\mu_{\text{inn1}}$ represent the average runs scored per delivery in the second and first innings at dew-prone venues. This is a one-sided test because cricket commentators specifically claim that dew makes the ball slippery and gives chasing teams an advantage. We set the smallest difference that matters to 0.05 runs/ball (about 6 runs across a 20-over match), because any smaller difference is negligible in practice and easily overshadowed by a single fielding mistake.}
+
+\tpart{b}{Other tests we considered}
+\hint{Which other tests did you consider, and why did you not use them? Say first why your test
+fits your data.}
+\egblock{We are comparing the averages of two separate groups where we do not know the true population standard deviations. We choose Welch's t-test because it does not assume that both innings have identical variance.}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Two-sample pooled t-test & Assumes equal population variances. An F-test checks this; while sample spreads are similar here, Welch's test is safer because it avoids making this assumption altogether. \\
+Two-sample Z-test for means & Requires knowing the true population standard deviation $\sigma$. We only have our sample standard deviations $s_1$ and $s_2$. \\
+Paired t-test & Requires matched pairs (like before-and-after tests on the same subject). Balls in Innings 1 and 2 are bowled to different batsmen by different bowlers, so there is no ball-to-ball pairing. \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+\hint{Report the test statistic, degrees of freedom, p-value and decision, and the estimate with
+a 95\% confidence interval. Is the difference large enough to matter?}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & $-0.02$ runs/ball (1.336 in Inn 2 vs. 1.356 in Inn 1) \\
+95\% confidence interval & $-0.046$ to $+0.006$ runs/ball \\
+Test statistic (d.f.) & $t = -5.23$ (61{,}689) \\
+p-value & 1.000 (two-sided $p = 0.136$) \\
+Decision & fail to reject $H_0$ \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{The data shows no evidence that chasing under dew boosts scoring rates. In fact, second innings score slightly lower on average ($-0.02$ runs/ball). The entire 95\% confidence interval is below zero and well under the 0.05 threshold that would matter. Chasing teams focus on reaching a target safely rather than maximizing runs, which naturally dampens their scoring rate regardless of dew.}
+
+%------------------------------------------------------------ Test 2
+\subsection*{Test 2 (P2): does the boundary rate in Death overs exceed Powerplay by over 2\%?}
+\hint{The same three parts as Test 1.}
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & $p_{\text{Death}} - p_{\text{Powerplay}} \le 0.02$ \\
+$H_1$ & $p_{\text{Death}} - p_{\text{Powerplay}} > 0.02$ \\
+Significance level & $\alpha=0.05$ \\
+Side & one-sided (right) \\
+Test & Two-proportion Z-test \\
+Smallest difference that matters & 0.02 (2 percentage points) \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{$p_{\text{Death}}$ and $p_{\text{Powerplay}}$ represent the proportion of balls that result in a boundary (four or six) during the Death overs and Powerplay overs. One-sided, because batsmen attack more aggressively in the death overs. We choose 2 percentage points (0.02) as the smallest difference that matters, which represents roughly one extra boundary hit every two overs.}
+
+\tpart{b}{Other tests we considered}
+\egblock{Each delivery either results in a boundary or it does not, making boundary hitting a binary (yes/no) outcome. We use the two-proportion Z-test to compare success rates between two large independent groups.}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Binomial exact test & Calculates exact probabilities for small sample sizes. With over 50{,}000 deliveries in each phase, the normal approximation used by the Z-test is exact, making binomial factorials unnecessary. \\
+One-sample Z-test for a proportion & Tests whether one sample proportion matches a pre-determined benchmark number $p_0$. Here we are comparing two unknown sample proportions estimated from data. \\
+Two-sample pooled t-test & Intended for continuous numerical measurements (like weights or scores). Boundary hits are binary 0/1 outcomes whose variance is directly linked to proportion $p(1-p)$. \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & $+0.72\%$ (19.01\% in Death vs. 18.29\% in Powerplay) \\
+95\% confidence interval & $+0.28\%$ to $+1.17\%$ \\
+Test statistic & $Z = -5.64$ (against 0.02 margin) \\
+p-value & 1.000 ($p = 0.0007$ against 0 difference) \\
+Decision & fail to reject $H_0$ \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{While the boundary percentage in Death overs is slightly higher than in the Powerplay ($+0.72\%$), the increase is tiny and fails our 2\% practical relevance standard ($Z = -5.64, p = 1.000$). The upper bound of the 95\% CI reaches only 1.17\%. This reveals that boundary frequency remains nearly identical between Powerplay and Death overs; the extra scoring in death overs comes primarily from running hard singles and doubles rather than hitting more boundaries.}
+
+%------------------------------------------------------------ Test 3
+\subsection*{Test 3 (P3): is dismissal mode independent of match phase?}
+\hint{The same three parts as Test 1.}
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & Mode of dismissal and match phase are independent \\
+$H_1$ & Mode of dismissal depends on match phase \\
+Significance level & $\alpha=0.05$ \\
+Side & Omnibus ($\chi^2$ upper tail) \\
+Test & Chi-square test of independence \\
+Smallest difference that matters & A shift of $\ge 2\%$ (or $\ge 50$ dismissals) between observed and expected in any category \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{$H_0$ states that how a batsman gets out (caught, bowled, lbw, run out) does not depend on whether the match is in the Powerplay, Middle, or Death overs. We set the smallest difference that matters as a shift of $\ge 2\%$ (or at least 50 dismissals) between observed and expected counts in any dismissal category, which represents a clear tactical divergence rather than routine match fluctuation.}
+
+\tpart{b}{Other tests we considered}
+\egblock{Both dismissal mode (4 categories) and match phase (3 categories) are categorical variables arranged in a $4 \times 3$ contingency table. The chi-square test of independence is the standard test for evaluating association between two categorical variables.}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Chi-square goodness-of-fit test & Compares a single categorical variable against fixed expected proportions (such as a 1:1:1:1 ratio). It cannot evaluate relationships between two separate categorical variables in a table. \\
+Two-proportion Z-test & Compares only a single binary proportion between two groups. It cannot handle multiple categories ($4 \times 3$ table). \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & Run outs in Death: 12.5\% obs. vs. 9.0\% exp. (+3.5\% surge, +149 dismissals) \\
+Contingency table & 4 dismissal types $\times$ 3 match phases \\
+Test statistic (d.f.) & $\chi^2 = 161.16$ (6) \\
+p-value & $3.37 \times 10^{-32}$ \\
+Decision & reject $H_0$ \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{The data decisively rejects independence ($\chi^2 = 161.16, p = 3.37 \times 10^{-32}$). In the Death overs, run outs surge to 527 observed compared to only 378 expected under independence (+149 dismissals, representing a +3.5\% surge from 9.0\% to 12.5\% of phase wickets that easily exceeds our 2\% threshold). This reflects high-risk running for desperate second runs, whereas bowled and LBW dismissals concentrate in the Powerplay against the swinging new ball.}
+
+%------------------------------------------------------------ Test 4
+\subsection*{Test 4 (P4): is ball outcome distribution independent of the stadium?}
+\hint{The same three parts as Test 1.}
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & Ball outcome distribution and stadium are independent \\
+$H_1$ & Ball outcome distribution depends on the stadium \\
+Significance level & $\alpha=0.05$ \\
+Side & Omnibus ($\chi^2$ upper tail) \\
+Test & Chi-square test of independence \\
+Smallest difference that matters & A $2\%$ divergence in boundary or dot ball share across stadiums \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{$H_0$ states that the distribution of delivery outcomes (Boundary, Dot, Strike Rotation, Wicket) is identical across the four iconic grounds (Chinnaswamy, Chepauk, Wankhede, Eden Gardens). We set the smallest difference that matters as a $2\%$ divergence in boundary or dot ball share across grounds (equivalent to roughly 2.4 boundaries or 11 runs per match), which separates venue-specific pitch behavior from routine match fluctuation.}
+
+\tpart{b}{Other tests we considered}
+\egblock{We have two categorical variables: Stadium (4 iconic venues) and Ball Outcome (4 categories), forming a $4 \times 4$ contingency table containing 78{,}329 deliveries.}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Chi-square goodness-of-fit test & Checks one categorical variable against a pre-set theoretical formula, but cannot test two-way independence in a two-dimensional grid. \\
+t-test for a correlation coefficient & Measures a straight-line trend $r$ between two numeric variables; stadium names and outcome types are labels without any numerical order. \\
+Welch's two-sample t-test & Compares numerical averages between only two venues. It cannot test a full multi-outcome categorical distribution across four venues at once. \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & Chinnaswamy boundary excess: +222 balls (17.8\% obs. vs. 16.5\% exp.); Chepauk boundary deficit: $-300$ balls (14.7\% obs.) \\
+Contingency table & 4 stadiums $\times$ 4 delivery outcomes \\
+Test statistic (d.f.) & $\chi^2 = 88.08$ (9) \\
+p-value & $3.96 \times 10^{-15}$ \\
+Decision & reject $H_0$ \\
+\bottomrule
+\end{tabularx}}
+
+\egblock{The test confirms that ball outcomes significantly depend on the stadium ($\chi^2 = 88.08, p = 3.96 \times 10^{-15}$). M. Chinnaswamy Stadium exhibits a marked overrepresentation of boundaries with 3{,}265 observed vs. 3{,}043 expected (+222 boundaries, 17.8\% observed vs. 16.5\% expected), whereas Chepauk shows a deficit with only 14.7\% boundaries and an excess of dot balls (30.3\% observed vs. 29.0\% expected). The 3.1\% boundary span between Chinnaswamy and Chepauk clears our 2\% practical significance threshold, demonstrating that venue dimensions and pitch nature directly alter match outcomes.}
+
+%-----------------------------------------------------------------------
+\section{Limitations}
+\hint{What your analysis cannot show, and why: rows you dropped, assumptions that hold only
+approximately, groups your conclusions do not cover, and association versus cause.}
+
+\begin{itemize}
+  \item \textbf{Target pacing confounder.} Chasing teams in the second innings bat to reach a specific target rather than score as many runs as possible; small targets naturally lower their run rate regardless of dew.
+  \item \textbf{Deliveries are not strictly independent.} Balls bowled in the same over share the same pitch conditions, bowler rhythm, and batsman form. Because deliveries are somewhat clustered, our p-values are slightly optimistic.
+  \item \textbf{Regulation 20-over matches only.} We removed 161 Super Over deliveries in Section 2, so our conclusions apply strictly to standard regulation play.
+  \item \textbf{Day matches included.} A small fraction of games were played in the afternoon at 4:00 PM without evening dew, which slightly dilutes the dew comparison.
+  \item \textbf{Rule changes across eras.} Across 17 seasons (2008--2024), boundary sizes, fielding restrictions, and ball replacement rules evolved slightly; analyzing all years together averages across these minor rule shifts.
+\end{itemize}
+
+\end{document}
