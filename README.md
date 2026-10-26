@@ -45,7 +45,7 @@ ipl_complete_project/
 │   ├── fig_p4_venues.pdf                  # P4 figure included in the report
 │   └── latex_table_snippets.txt           # Exact numerical results formatted for LaTeX tables
 ├── src/
-│   └── run_ipl_analysis.py                # Complete Python analysis pipeline without comments
+│   └── run_ipl_analysis.py                # Complete Python analysis pipeline
 └── README.md                              # Project overview, directory guide, and execution instructions
 ```
 
